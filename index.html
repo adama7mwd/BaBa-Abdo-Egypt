@@ -1830,7 +1830,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('Setting up visitor counter...');
+      console.log('Setting up unique visitor counter...');
       
       const visitorElement = document.getElementById('visitor-count');
       if (!visitorElement) {
@@ -1838,21 +1838,26 @@
         return;
       }
 
-      // Simple local counter that works reliably
+      // Count unique visitors per device (not refreshes)
       try {
-        // Get stored count or start from 0
-        let currentCount = localStorage.getItem('baba-abdo-visitor-count') || 0;
-        currentCount = parseInt(currentCount);
+        // Check if this device has already been counted today
+        const today = new Date().toDateString();
+        const lastVisitDate = localStorage.getItem('baba-abdo-last-visit-date');
+        const currentCount = parseInt(localStorage.getItem('baba-abdo-visitor-count') || 0);
         
-        // Increment count
-        currentCount++;
+        // Only increment if this is a new day or first visit
+        if (lastVisitDate !== today) {
+          const newCount = currentCount + 1;
+          localStorage.setItem('baba-abdo-visitor-count', newCount);
+          localStorage.setItem('baba-abdo-last-visit-date', today);
+          console.log('New unique visitor counted:', newCount);
+        } else {
+          console.log('Visitor already counted today');
+        }
         
-        // Save back to localStorage
-        localStorage.setItem('baba-abdo-visitor-count', currentCount);
-        
-        // Update display
-        visitorElement.innerHTML = `👁 Visitor: ${currentCount}`;
-        console.log('Visitor counter updated:', currentCount);
+        // Display current count
+        const displayCount = parseInt(localStorage.getItem('baba-abdo-visitor-count') || 0);
+        visitorElement.innerHTML = `👁 Visitor: ${displayCount}`;
         
       } catch (error) {
         console.error('Visitor counter error:', error);
