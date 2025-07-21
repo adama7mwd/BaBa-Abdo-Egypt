@@ -1830,7 +1830,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('Setting up unique visitor counter...');
+      console.log('Setting up reliable visitor counter...');
       
       const visitorElement = document.getElementById('visitor-count');
       if (!visitorElement) {
@@ -1838,26 +1838,28 @@
         return;
       }
 
-      // Count unique visitors per device (not refreshes)
+      // Simple but effective visitor counter
       try {
-        // Check if this device has already been counted today
-        const today = new Date().toDateString();
-        const lastVisitDate = localStorage.getItem('baba-abdo-last-visit-date');
-        const currentCount = parseInt(localStorage.getItem('baba-abdo-visitor-count') || 0);
+        // Get current count from localStorage
+        let totalVisitors = parseInt(localStorage.getItem('baba-abdo-total-visitors') || 0);
         
-        // Only increment if this is a new day or first visit
-        if (lastVisitDate !== today) {
-          const newCount = currentCount + 1;
-          localStorage.setItem('baba-abdo-visitor-count', newCount);
-          localStorage.setItem('baba-abdo-last-visit-date', today);
-          console.log('New unique visitor counted:', newCount);
+        // Check if this is a new session (not just a page refresh)
+        const sessionId = sessionStorage.getItem('baba-abdo-session-id');
+        const currentTime = Date.now();
+        
+        if (!sessionId) {
+          // This is a new session, increment the counter
+          totalVisitors++;
+          localStorage.setItem('baba-abdo-total-visitors', totalVisitors);
+          sessionStorage.setItem('baba-abdo-session-id', currentTime.toString());
+          console.log('New session detected, visitor count:', totalVisitors);
         } else {
-          console.log('Visitor already counted today');
+          console.log('Existing session, no increment');
         }
         
-        // Display current count
-        const displayCount = parseInt(localStorage.getItem('baba-abdo-visitor-count') || 0);
-        visitorElement.innerHTML = `👁 Visitor: ${displayCount}`;
+        // Display the count
+        visitorElement.innerHTML = `👁 Visitor: ${totalVisitors}`;
+        console.log('Visitor counter displayed:', totalVisitors);
         
       } catch (error) {
         console.error('Visitor counter error:', error);
